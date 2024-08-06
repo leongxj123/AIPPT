@@ -29,10 +29,10 @@
   </head>
   <body>
     <div id="container"></div>
+
     <script>
-      const API_KEY = '<%= process.env.API_KEY %>';
       const docmeeUI = new DocmeeUI({
-        token: API_KEY,
+        token: process.env.API_KEY,
         container: document.querySelector('#container'), // 挂载 iframe 的容器
         page: 'creator', // 'dashboard' ppt列表; 'creator' 创建页面
         background: 'linear-gradient(-157deg,#f57bb0, #867dea)',
