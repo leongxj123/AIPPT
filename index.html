@@ -31,48 +31,39 @@
     <div id="container"></div>
 
     <script>
-      fetch('/getToken')
-        .then(response => response.json())
-        .then(data => {
-          const apiKey = data.API_KEY;
+      const docmeeUI = new DocmeeUI({
+        token: 'ak_uL78W0vvETpEsLBMjk',
+        container: document.querySelector('#container'), // 挂载 iframe 的容器
+        page: 'creator', // 'dashboard' ppt列表; 'creator' 创建页面
+        background: 'linear-gradient(-157deg,#f57bb0, #867dea)',
+        padding: '40px 20px 0px',
+        onMessage(message) {
+          console.log(message);
 
-          const docmeeUI = new DocmeeUI({
-            token: apiKey,
-            container: document.querySelector('#container'), // 挂载 iframe 的容器
-            page: 'creator', // 'dashboard' ppt列表; 'creator' 创建页面
-            background: 'linear-gradient(-157deg,#f57bb0, #867dea)',
-            padding: '40px 20px 0px',
-            onMessage(message) {
-              console.log(message);
-
-              if (message.type === 'invalid-token') {
-                console.log('token 认证错误'); // 在token失效时触发
-              }
-              if (message.type === 'beforeGenerate') {
-                const { subtype, fields } = message.data;
-                if (subtype === 'outline') {
-                  // 生成大纲前触发
-                  console.log('即将生成ppt大纲', fields);
-                  return true;
-                } else if (subtype === 'ppt') {
-                  // 生成ppt前触发
-                  console.log('即将生成ppt', fields);
-                  docmeeUI.sendMessage({
-                    type: 'success',
-                    content: '继续生成PPT',
-                  });
-                  return true;
-                }
-              }
-              if (message.type === 'beforeDownload') {
-                return `PPT_${new Date().getTime()}.pptx`;
-              }
-            },
-          });
-        })
-        .catch(error => {
-          console.error('Error fetching API key:', error);
-        });
+          if (message.type === 'invalid-token') {
+            console.log('token 认证错误'); // 在token失效时触发
+          }
+          if (message.type === 'beforeGenerate') {
+            const { subtype, fields } = message.data;
+            if (subtype === 'outline') {
+              // 生成大纲前触发
+              console.log('即将生成ppt大纲', fields);
+              return true;
+            } else if (subtype === 'ppt') {
+              // 生成ppt前触发
+              console.log('即将生成ppt', fields);
+              docmeeUI.sendMessage({
+                type: 'success',
+                content: '继续生成PPT',
+              });
+              return true;
+            }
+          }
+          if (message.type === 'beforeDownload') {
+            return `PPT_${new Date().getTime()}.pptx`;
+          }
+        },
+      });
     </script>
   </body>
 </html>
