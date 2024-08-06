@@ -1,72 +1,75 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
-    <meta charset="UTF-8" />
-    <title>AiPPT</title>
-    <script src="/docmee-ui-sdk-iframe.min.js"></script>
+  <meta charset="UTF-8" />
+  <title>AiPPT</title>
+  <script src="/docmee-ui-sdk-iframe.min.js"></script>
 
-    <style>
-        body {
-            width: 100vw;
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+  <style>
+    body {
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-        #container {
-            width: calc(100% - 20px);
-            height: calc(100% - 20px);
-            margin: 0;
-            padding: 0;
-            border-radius: 12px;
-            box-shadow: 0 0 12px rgba(120, 120, 120, 0.3);
-            overflow: hidden;
-            background: linear-gradient(-157deg, #f57bb0, #867dea);
-            color: white;
-        }
-    </style>
+    #container {
+      width: calc(100% - 20px);
+      height: calc(100% - 20px);
+      margin: 0;
+      padding: 0;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(120, 120, 120, 0.3);
+      overflow: hidden;
+      background: linear-gradient(-157deg, #f57bb0, #867dea);
+      color: white;
+    }
+  </style>
 </head>
+
 <body>
-    <div id="container"></div>
+  <div id="container"></div>
 
-    <script>
-      const token = process.env.DOCMEE_TOKEN;
+  <script>
+    const token = process.env.DOCMEE_TOKEN;
 
-      const docmeeUI = new DocmeeUI({
-        token: token,
-        container: document.querySelector('#container'), // ¹ÒÔØ iframe µÄÈİÆ÷
-        page: 'creator', // 'dashboard' pptÁĞ±í; 'creator' ´´½¨Ò³Ãæ
-        background: 'linear-gradient(-157deg,#f57bb0, #867dea)',
-        padding: '40px 20px 0px',
-        onMessage(message) {
-          console.log(message);
+    const docmeeUI = new DocmeeUI({
+      token: token,
+      container: document.querySelector('#container'), // æŒ‚è½½ iframe çš„å®¹å™¨
+      page: 'creator', // 'dashboard' pptåˆ—è¡¨; 'creator' åˆ›å»ºé¡µé¢
+      background: 'linear-gradient(-157deg,#f57bb0, #867dea)',
+      padding: '40px 20px 0px',
+      onMessage(message) {
+        console.log(message);
 
-          if (message.type === 'invalid-token') {
-            console.log('token ÈÏÖ¤´íÎó'); // ÔÚtokenÊ§Ğ§Ê±´¥·¢
+        if (message.type === 'invalid-token') {
+          console.log('token è®¤è¯é”™è¯¯'); // åœ¨tokenå¤±æ•ˆæ—¶è§¦å‘
+        }
+        if (message.type === 'beforeGenerate') {
+          const { subtype, fields } = message.data;
+          if (subtype === 'outline') {
+            // ç”Ÿæˆå¤§çº²å‰è§¦å‘
+            console.log('å³å°†ç”Ÿæˆpptå¤§çº²', fields);
+            return true;
+          } else if (subtype === 'ppt') {
+            // ç”Ÿæˆpptå‰è§¦å‘
+            console.log('å³å°†ç”Ÿæˆppt', fields);
+            docmeeUI.sendMessage({
+              type: 'success',
+              content: 'ç»§ç»­ç”ŸæˆPPT',
+            });
+            return true;
           }
-          if (message.type === 'beforeGenerate') {
-            const { subtype, fields } = message.data;
-            if (subtype === 'outline') {
-              // Éú³É´ó¸ÙÇ°´¥·¢
-              console.log('¼´½«Éú³Éppt´ó¸Ù', fields);
-              return true;
-            } else if (subtype === 'ppt') {
-              // Éú³ÉpptÇ°´¥·¢
-              console.log('¼´½«Éú³Éppt', fields);
-              docmeeUI.sendMessage({
-                type: 'success',
-                content: '¼ÌĞøÉú³ÉPPT',
-              });
-              return true;
-            }
-          }
-          if (message.type === 'beforeDownload') {
-            return `PPT_${new Date().getTime()}.pptx`;
-          }
-        },
-      });
-    </script>
+        }
+        if (message.type === 'beforeDownload') {
+          return `PPT_${new Date().getTime()}.pptx`;
+        }
+      },
+    });
+  </script>
 </body>
+
 </html>
